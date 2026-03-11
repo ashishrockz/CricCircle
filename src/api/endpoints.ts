@@ -1,0 +1,81 @@
+export const ENDPOINTS = {
+  AUTH: {
+    SEND_OTP: '/api/auth/send-otp',
+    VERIFY_OTP: '/api/auth/verify-otp',
+  },
+  USER: {
+    PROFILE: '/api/user/profile',
+    UPDATE: '/api/user/profile',
+    LIST: '/api/user',
+    GET: (id: string) => `/api/user/${id}`,
+    STATS: (id: string) => `/api/user/${id}/stats`,
+  },
+  FRIENDS: {
+    LIST: '/api/friends',
+    STATS: '/api/friends/stats',
+    INCOMING: '/api/friends/requests/incoming',
+    OUTGOING: '/api/friends/requests/outgoing',
+    STATUS: (userId: string) => `/api/friends/status/${userId}`,
+    REQUEST: (userId: string) => `/api/friends/request/${userId}`,
+    ACCEPT: (requestId: string) => `/api/friends/request/${requestId}/accept`,
+    REJECT: (requestId: string) => `/api/friends/request/${requestId}/reject`,
+    CANCEL: (requestId: string) => `/api/friends/request/${requestId}`,
+    UNFRIEND: (userId: string) => `/api/friends/unfriend/${userId}`,
+    BLOCK: (userId: string) => `/api/friends/block/${userId}`,
+    UNBLOCK: (userId: string) => `/api/friends/block/${userId}`,
+  },
+  SPORTS: {
+    CREATE: '/api/sports',
+    LIST: '/api/sports',
+    BY_USER: (userId: string) => `/api/sports/user/${userId}`,
+    GET: (id: string) => `/api/sports/${id}`,
+    UPDATE: (id: string) => `/api/sports/${id}`,
+    DELETE: (id: string) => `/api/sports/${id}`,
+  },
+  SPORT_TYPES: {
+    SLUG: (slug: string) => `/api/sport-types/slug/${slug}`,
+    LIST: '/api/sport-types',
+    GET: (id: string) => `/api/sport-types/${id}`,
+  },
+  ROOMS: {
+    CREATE: '/api/rooms',
+    LIST: '/api/rooms',
+    GET: (id: string) => `/api/rooms/${id}`,
+    ADD_FRIEND: (id: string) => `/api/rooms/${id}/players/friend`,
+    ADD_STATIC: (id: string) => `/api/rooms/${id}/players/static`,
+    REMOVE_PLAYER: (id: string, slotId: string) =>
+      `/api/rooms/${id}/players/${slotId}`,
+    SWITCH_TEAM: (id: string, slotId: string) =>
+      `/api/rooms/${id}/players/${slotId}/team`,
+    SET_ROLE: (id: string, slotId: string) =>
+      `/api/rooms/${id}/players/${slotId}/role`,
+    SET_CAPTAIN: (id: string, slotId: string) =>
+      `/api/rooms/${id}/captain/${slotId}`,
+    LOCK: (id: string) => `/api/rooms/${id}/lock`,
+    TOSS: (id: string) => `/api/rooms/${id}/toss`,
+    TOSS_CHOICE: (id: string) => `/api/rooms/${id}/toss-choice`,
+    START: (id: string) => `/api/rooms/${id}/start`,
+    ABANDON: (id: string) => `/api/rooms/${id}/abandon`,
+  },
+  MATCHES: {
+    BY_ROOM: (roomId: string) => `/api/matches/room/${roomId}`,
+    GET: (id: string) => `/api/matches/${id}`,
+    COMMENTARY: (id: string) => `/api/matches/${id}/commentary`,
+    START: (id: string) => `/api/matches/${id}/start`,
+    COMPLETE: (id: string) => `/api/matches/${id}/complete`,
+    ABANDON: (id: string) => `/api/matches/${id}/abandon`,
+    CRICKET_LINEUP: (id: string) => `/api/matches/${id}/cricket/lineup`,
+    CRICKET_BALL: (id: string) => `/api/matches/${id}/cricket/ball`,
+    CRICKET_RESUME: (id: string) => `/api/matches/${id}/cricket/resume-innings`,
+  },
+  LEADERBOARDS: {
+    CRICKET_BATTING: '/api/leaderboards/cricket/batting',
+    CRICKET_BOWLING: '/api/leaderboards/cricket/bowling',
+    WINS: '/api/leaderboards/wins',
+    MOST_MATCHES: '/api/leaderboards/most-matches',
+  },
+  HIGHLIGHTS: {
+    GET: (matchId: string) => `/api/highlights/${matchId}`,
+  },
+  APP_CONFIG: '/api/app-config',
+} as const;
