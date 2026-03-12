@@ -63,6 +63,7 @@ export interface BattingStats {
   highScore: number;
   fifties: number;
   hundreds: number;
+  doubleHundreds: number;
   fours: number;
   sixes: number;
   notOuts: number;
@@ -77,6 +78,8 @@ export interface BowlingStats {
   bestBowling: string;
   economy: number;
   maidens: number;
+  fiveWicketHauls: number;
+  hatTricks: number;
 }
 
 export interface SportProfile {

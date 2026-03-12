@@ -137,26 +137,28 @@ export default function CricbuzzScorecardScreen({navigation, route}: Props) {
 
   const ScorecardContent = (
     <>
-      {/* Match Title */}
-      <Text style={[styles.matchTitle, {color: colors.text}]}>
-        {match.teamA.name} vs {match.teamB.name}
-      </Text>
+      {/* Match Header Card */}
+      <Card style={StyleSheet.flatten([styles.headerCard, {backgroundColor: colors.surface}])}>
+        <Text style={[styles.matchTitle, {color: colors.text}]}>
+          {match.teamA.name} <Text style={{color: colors.primary}}>vs</Text> {match.teamB.name}
+        </Text>
 
-      {/* Result Banner */}
-      {(() => {
-        const resultText = getResultText(
-          match.result,
-          match.teamA.name,
-          match.teamB.name,
-        );
-        return resultText ? (
-          <Card style={styles.resultCard}>
-            <Text style={[styles.resultText, {color: colors.primary}]}>
-              {resultText}
-            </Text>
-          </Card>
-        ) : null;
-      })()}
+        {/* Result Banner */}
+        {(() => {
+          const resultText = getResultText(
+            match.result,
+            match.teamA.name,
+            match.teamB.name,
+          );
+          return resultText ? (
+            <View style={[styles.resultBadge, {backgroundColor: colors.primary + '15'}]}>
+              <Text style={[styles.resultText, {color: colors.primary}]}>
+                {resultText}
+              </Text>
+            </View>
+          ) : null;
+        })()}
+      </Card>
 
       {/* Innings Sections */}
       {match.innings.map((inn, index) => {
@@ -170,18 +172,25 @@ export default function CricbuzzScorecardScreen({navigation, route}: Props) {
               onPress={() => toggleInnings(index)}
               style={[
                 styles.inningsHeader,
-                {backgroundColor: colors.surface, borderColor: colors.border},
+                {backgroundColor: colors.surface, borderLeftColor: colors.primary},
+                isExpanded && styles.inningsHeaderExpanded
               ]}
-              activeOpacity={0.7}>
-              <Text style={[styles.inningsHeaderText, {color: colors.text}]}>
-                {teamName} {formatScore(inn.totalRuns, inn.totalWickets)} (
-                {formatOvers(inn.completedOvers)} Ov)
-              </Text>
-              <FeatherIcon
-                name={isExpanded ? 'chevron-up' : 'chevron-down'}
-                size={scale(20)}
-                color={colors.textSecondary}
-              />
+              activeOpacity={0.8}>
+              <View style={styles.inningsHeaderTitleContainer}>
+                <Text style={[styles.inningsTeamName, {color: colors.text}]}>
+                  {teamName}
+                </Text>
+                <Text style={[styles.inningsScore, {color: colors.text}]}>
+                  {formatScore(inn.totalRuns, inn.totalWickets)} <Text style={[styles.inningsOvers, {color: colors.textSecondary}]}>({formatOvers(inn.completedOvers)} Ov)</Text>
+                </Text>
+              </View>
+              <View style={[styles.iconCircle, {backgroundColor: colors.background}]}>
+                <FeatherIcon
+                  name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                  size={scale(18)}
+                  color={colors.primary}
+                />
+              </View>
             </TouchableOpacity>
 
             {/* Expanded Content */}
@@ -303,10 +312,12 @@ function InningsDetail({
   return (
     <Card style={styles.inningsContent}>
       {/* Batting Table */}
-      <Text style={[styles.tableTitle, {color: colors.text}]}>
-        {t('cricket.batting')}
-      </Text>
-      <View style={styles.tableHeader}>
+      <View style={[styles.sectionHeaderWrap, {backgroundColor: colors.primary + '11'}]}>
+        <Text style={[styles.tableTitle, {color: colors.primary}]}>
+          {t('cricket.batting')}
+        </Text>
+      </View>
+      <View style={[styles.tableHeader, {borderBottomColor: colors.divider, borderBottomWidth: 1}]}>
         <Text
           style={[styles.headerCell, styles.nameCell, {color: colors.textSecondary}]}>
           Batter
@@ -353,10 +364,12 @@ function InningsDetail({
       </View>
 
       {/* Bowling Table */}
-      <Text style={[styles.tableTitle, styles.bowlingTitle, {color: colors.text}]}>
-        {t('cricket.bowling')}
-      </Text>
-      <View style={styles.tableHeader}>
+      <View style={[styles.sectionHeaderWrap, {backgroundColor: colors.primary + '11', marginTop: scale(8)}]}>
+        <Text style={[styles.tableTitle, {color: colors.primary}]}>
+          {t('cricket.bowling')}
+        </Text>
+      </View>
+      <View style={[styles.tableHeader, {borderBottomColor: colors.divider, borderBottomWidth: 1}]}>
         <Text
           style={[styles.headerCell, styles.nameCell, {color: colors.textSecondary}]}>
           Bowler
@@ -384,14 +397,18 @@ function InningsDetail({
           <Text style={[styles.fowTitle, {color: colors.textSecondary}]}>
             {t('cricket.fallOfWickets')}
           </Text>
-          <Text style={[styles.fowText, {color: colors.text}]}>
-            {fallOfWickets
-              .map(
-                f =>
-                  `${f.score}-${f.wicketNumber} (${f.batsmanName}, ${f.overNumber} ov)`,
-              )
-              .join(', ')}
-          </Text>
+          <View style={styles.fowChipsContainer}>
+            {fallOfWickets.map((f, idx) => (
+              <View key={idx} style={[styles.fowChip, {backgroundColor: colors.surface, borderColor: colors.border}]}>
+                <Text style={[styles.fowChipScore, {color: colors.text}]}>
+                  {f.score}-{f.wicketNumber}
+                </Text>
+                <Text style={[styles.fowChipDetail, {color: colors.textSecondary}]}>
+                  {f.batsmanName}, {f.overNumber}
+                </Text>
+              </View>
+            ))}
+          </View>
         </View>
       )}
 
@@ -422,7 +439,7 @@ function InningsDetail({
                 </Text>
               </View>
               {/* Partnership bar */}
-              <View style={[styles.partnershipBar, {backgroundColor: colors.divider}]}>
+              <View style={[styles.partnershipBar, {backgroundColor: colors.border}]}>
                 <View
                   style={[
                     styles.partnershipBarFill,
@@ -522,44 +539,111 @@ function InningsDetail({
 const styles = StyleSheet.create({
   container: {flex: 1},
   scroll: {padding: scale(16), paddingBottom: scale(32)},
+  headerCard: {
+    paddingVertical: scale(20),
+    paddingHorizontal: scale(16),
+    marginBottom: scale(20),
+    alignItems: 'center',
+    borderRadius: scale(16),
+  },
   matchTitle: {
-    fontSize: scale(18),
-    fontWeight: '700',
+    fontSize: scale(20),
+    fontWeight: '800',
     textAlign: 'center',
     marginBottom: scale(12),
+    letterSpacing: 0.5,
   },
-  resultCard: {marginBottom: scale(16), alignItems: 'center'},
-  resultText: {fontSize: scale(16), fontWeight: '600', textAlign: 'center'},
-  inningsSection: {marginBottom: scale(12)},
+  resultBadge: {
+    paddingVertical: scale(6),
+    paddingHorizontal: scale(16),
+    borderRadius: scale(20),
+  },
+  resultText: {
+    fontSize: scale(13),
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  inningsSection: {
+    marginBottom: scale(16),
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: {width: 0, height: 4},
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
+  },
   inningsHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: scale(14),
+    paddingVertical: scale(16),
     paddingHorizontal: scale(16),
-    borderRadius: scale(10),
-    borderWidth: 1,
+    borderRadius: scale(12),
+    borderLeftWidth: 4,
   },
-  inningsHeaderText: {fontSize: scale(15), fontWeight: '600', flex: 1},
-  inningsContent: {marginTop: scale(4), paddingHorizontal: 0},
-  tableTitle: {
-    fontSize: scale(15),
+  inningsHeaderExpanded: {
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+  inningsHeaderTitleContainer: {
+    flex: 1,
+    gap: scale(4),
+  },
+  inningsTeamName: {
+    fontSize: scale(13),
     fontWeight: '600',
-    paddingHorizontal: scale(12),
-    marginBottom: scale(8),
-    marginTop: scale(4),
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
-  bowlingTitle: {marginTop: scale(16)},
+  inningsScore: {
+    fontSize: scale(22),
+    fontWeight: '800',
+  },
+  inningsOvers: {
+    fontSize: scale(14),
+    fontWeight: '500',
+  },
+  iconCircle: {
+    width: scale(32),
+    height: scale(32),
+    borderRadius: scale(16),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inningsContent: {
+    marginTop: 0,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    paddingHorizontal: 0,
+    paddingTop: 0, // removed to let section headers touch the top
+    overflow: 'hidden',
+  },
+  sectionHeaderWrap: {
+    paddingVertical: scale(8),
+    paddingHorizontal: scale(16),
+  },
+  tableTitle: {
+    fontSize: scale(14),
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
   tableHeader: {
     flexDirection: 'row',
-    paddingVertical: scale(6),
-    paddingHorizontal: scale(12),
+    paddingVertical: scale(10),
+    paddingHorizontal: scale(16),
   },
   headerCell: {
     flex: 0.7,
-    fontSize: scale(12),
-    fontWeight: '600',
+    fontSize: scale(11),
+    fontWeight: '700',
     textAlign: 'center',
+    textTransform: 'uppercase',
   },
   nameCell: {flex: 2, textAlign: 'left'},
   extrasRow: {
@@ -581,25 +665,47 @@ const styles = StyleSheet.create({
   totalLabel: {fontSize: scale(15), fontWeight: '700'},
   totalValue: {fontSize: scale(15), fontWeight: '700'},
   fowSection: {
-    paddingHorizontal: scale(12),
-    paddingVertical: scale(10),
-    borderTopWidth: 0.5,
+    paddingHorizontal: scale(16),
+    paddingVertical: scale(16),
+    borderTopWidth: 1,
   },
   fowTitle: {
     fontSize: scale(13),
-    fontWeight: '600',
-    marginBottom: scale(4),
+    fontWeight: '700',
+    marginBottom: scale(12),
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
-  fowText: {fontSize: scale(12), lineHeight: scale(18)},
+  fowChipsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: scale(8),
+  },
+  fowChip: {
+    paddingVertical: scale(6),
+    paddingHorizontal: scale(10),
+    borderRadius: scale(8),
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fowChipScore: {
+    fontSize: scale(13),
+    fontWeight: '700',
+  },
+  fowChipDetail: {
+    fontSize: scale(10),
+    marginTop: scale(2),
+  },
 
   // Partnerships
   partnershipsSection: {
-    paddingHorizontal: scale(12),
-    paddingVertical: scale(10),
-    borderTopWidth: 0.5,
+    paddingHorizontal: scale(16),
+    paddingVertical: scale(16),
+    borderTopWidth: 1,
   },
   partnershipRow: {
-    marginBottom: scale(8),
+    marginBottom: scale(12),
   },
   partnershipInfo: {
     flexDirection: 'row',
@@ -643,57 +749,69 @@ const styles = StyleSheet.create({
 
   // Over-by-over
   oversSection: {
-    paddingHorizontal: scale(12),
-    paddingVertical: scale(10),
-    borderTopWidth: 0.5,
+    paddingHorizontal: scale(16),
+    paddingVertical: scale(16),
+    borderTopWidth: 1,
   },
   oversToggle: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: scale(4),
+    marginBottom: scale(8),
   },
   overSummaryRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: scale(6),
-    borderBottomWidth: 0.5,
-    gap: scale(4),
+    paddingVertical: scale(10),
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    gap: scale(8),
   },
   overNumCol: {
-    width: scale(28),
+    width: scale(32),
   },
   overNum: {
-    fontSize: scale(12),
-    fontWeight: '600',
+    fontSize: scale(13),
+    fontWeight: '700',
     textAlign: 'center',
   },
   overBowlerCol: {
-    width: scale(70),
+    width: scale(80),
   },
   overBowler: {
-    fontSize: scale(11),
+    fontSize: scale(12),
+    fontWeight: '500',
   },
   overBallsCol: {
     flex: 1,
     flexDirection: 'row',
   },
   overBallDot: {
-    width: scale(24),
-    height: scale(24),
-    borderRadius: scale(12),
+    width: scale(26),
+    height: scale(26),
+    borderRadius: scale(13),
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: scale(3),
+    marginRight: scale(6),
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: {width: 0, height: 1},
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
   },
   overBallText: {
-    fontSize: scale(10),
-    fontWeight: '700',
+    fontSize: scale(11),
+    fontWeight: '800',
   },
   overRuns: {
-    width: scale(24),
-    fontSize: scale(12),
-    fontWeight: '700',
+    width: scale(28),
+    fontSize: scale(14),
+    fontWeight: '800',
     textAlign: 'right',
   },
 

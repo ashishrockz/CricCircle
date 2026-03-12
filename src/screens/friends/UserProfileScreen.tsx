@@ -23,6 +23,7 @@ import Card from '../../components/ui/Card';
 import Loader from '../../components/ui/Loader';
 import AppModal from '../../components/ui/AppModal';
 import ScreenHeader from '../../components/ScreenHeader';
+import MilestoneBadges from '../../components/MilestoneBadge';
 import type {User, FriendshipStatus} from '../../models';
 
 type Props = NativeStackScreenProps<FriendsStackParams, 'UserProfile'>;
@@ -51,6 +52,9 @@ interface CricketTypeStats {
     highestScore: number;
     average: number;
     strikeRate: number;
+    fifties: number;
+    hundreds: number;
+    doubleHundreds: number;
   };
   bowling: {
     wickets: number;
@@ -59,6 +63,8 @@ interface CricketTypeStats {
     overs: string;
     economy: number;
     bestBowling: string;
+    fiveWicketHauls: number;
+    hatTricks: number;
   };
 }
 
@@ -441,6 +447,13 @@ export default function UserProfileScreen({route}: Props) {
                 <StatItem label="4s" value={String(batting?.fours || 0)} colors={colors} />
                 <StatItem label="6s" value={String(batting?.sixes || 0)} colors={colors} />
               </View>
+              <MilestoneBadges
+                milestones={[
+                  {emoji: '🔥', label: '50s', value: batting?.fifties || 0},
+                  {emoji: '💯', label: '100s', value: batting?.hundreds || 0},
+                  {emoji: '🏆', label: '200s', value: batting?.doubleHundreds || 0},
+                ]}
+              />
             </Card>
 
             {/* Bowling */}
@@ -460,6 +473,12 @@ export default function UserProfileScreen({route}: Props) {
                 <StatItem label="Runs" value={String(bowling?.runsConceded || 0)} colors={colors} />
                 <StatItem label="Best" value={bowling?.bestBowling || '0/0'} colors={colors} highlight />
               </View>
+              <MilestoneBadges
+                milestones={[
+                  {emoji: '⭐', label: '5W Hauls', value: bowling?.fiveWicketHauls || 0},
+                  {emoji: '🎩', label: 'Hat-tricks', value: bowling?.hatTricks || 0},
+                ]}
+              />
             </Card>
           </>
         ) : (

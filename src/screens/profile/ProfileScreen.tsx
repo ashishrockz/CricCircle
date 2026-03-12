@@ -23,6 +23,7 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import AppModal from '../../components/ui/AppModal';
 import SettingsDrawer from '../../components/SettingsDrawer';
+import MilestoneBadges from '../../components/MilestoneBadge';
 
 type Props = NativeStackScreenProps<ProfileStackParams, 'ProfileMain'>;
 type StatsTab = 'all' | 'local' | 'tournament';
@@ -40,6 +41,9 @@ interface CricketTypeStats {
     highestScore: number;
     average: number;
     strikeRate: number;
+    fifties: number;
+    hundreds: number;
+    doubleHundreds: number;
   };
   bowling: {
     wickets: number;
@@ -48,6 +52,8 @@ interface CricketTypeStats {
     overs: string;
     economy: number;
     bestBowling: string;
+    fiveWicketHauls: number;
+    hatTricks: number;
   };
 }
 
@@ -376,6 +382,13 @@ export default function ProfileScreen({navigation}: Props) {
                   colors={colors}
                 />
               </View>
+              <MilestoneBadges
+                milestones={[
+                  {emoji: '🔥', label: '50s', value: batting?.fifties || 0},
+                  {emoji: '💯', label: '100s', value: batting?.hundreds || 0},
+                  {emoji: '🏆', label: '200s', value: batting?.doubleHundreds || 0},
+                ]}
+              />
             </Card>
 
             {/* Bowling */}
@@ -425,6 +438,12 @@ export default function ProfileScreen({navigation}: Props) {
                   highlight
                 />
               </View>
+              <MilestoneBadges
+                milestones={[
+                  {emoji: '⭐', label: '5W Hauls', value: bowling?.fiveWicketHauls || 0},
+                  {emoji: '🎩', label: 'Hat-tricks', value: bowling?.hatTricks || 0},
+                ]}
+              />
             </Card>
           </>
         ) : (
