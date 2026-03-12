@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useTranslation} from 'react-i18next';
+import FeatherIcon from '@react-native-vector-icons/feather';
 import type {RoomStackParams} from '../../navigation/types';
 import {useTheme} from '../../theme';
 import {useRoomStore} from '../../stores/room.store';
@@ -34,6 +35,7 @@ import PlayerSlotCard from '../../components/PlayerSlotCard';
 import BottomSheet from '../../components/BottomSheet';
 import Input from '../../components/ui/Input';
 import Loader from '../../components/ui/Loader';
+import Avatar from '../../components/ui/Avatar';
 import ScreenHeader from '../../components/ScreenHeader';
 import type {Friend, Match} from '../../models';
 
@@ -55,6 +57,7 @@ export default function RoomDetailScreen({navigation, route}: Props) {
   const [showRolePicker, setShowRolePicker] = useState(false);
   const [roleSlotId, setRoleSlotId] = useState<string | null>(null);
   const [friends, setFriends] = useState<Friend[]>([]);
+  const [selectedFriends, setSelectedFriends] = useState<Set<string>>(new Set());
   const [staticName, setStaticName] = useState('');
   const [matchData, setMatchData] = useState<Match | null>(null);
 
@@ -130,6 +133,7 @@ export default function RoomDetailScreen({navigation, route}: Props) {
 
   const handleAddFriendOpen = async (team: 'A' | 'B') => {
     setAddingToTeam(team);
+    setSelectedFriends(new Set());
     try {
       const list = await friendService.listFriends();
       setFriends(list);
@@ -142,20 +146,36 @@ export default function RoomDetailScreen({navigation, route}: Props) {
     setShowAddStatic(true);
   };
 
-  const handleAddFriend = async (friend: Friend) => {
-    if (!addingToTeam) return;
+  const toggleFriendSelect = (userId: string) => {
+    setSelectedFriends(prev => {
+      const next = new Set(prev);
+      if (next.has(userId)) next.delete(userId);
+      else next.add(userId);
+      return next;
+    });
+  };
+
+  const handleAddSelectedFriends = async () => {
+    if (!addingToTeam || selectedFriends.size === 0) return;
     setShowAddFriend(false);
     setActionLoading(true);
-    try {
-      const room = await roomService.addFriendPlayer(roomId, {
-        userId: friend.user.id,
-        name: friend.user.name,
-        team: addingToTeam,
-      });
-      setCurrentRoom(room);
-    } catch (err: any) {
-      showError(err);
+    let lastRoom = null;
+    for (const friendId of selectedFriends) {
+      const friend = friends.find(f => f.user.id === friendId);
+      if (!friend) continue;
+      try {
+        lastRoom = await roomService.addFriendPlayer(roomId, {
+          friendUserId: friend.user.id,
+          playerName: friend.user.name,
+          team: addingToTeam,
+        });
+      } catch (err: any) {
+        showError(err);
+        break;
+      }
     }
+    if (lastRoom) setCurrentRoom(lastRoom);
+    setSelectedFriends(new Set());
     setActionLoading(false);
   };
 
@@ -524,22 +544,49 @@ export default function RoomDetailScreen({navigation, route}: Props) {
             ? currentRoom.teamAName
             : currentRoom.teamBName}
         </Text>
-        <ScrollView>
-          {friends.map(f => (
-            <PlayerSlotCard
-              key={f.id}
-              player={{
-                id: f.user.id,
-                name: f.user.name,
-                isStatic: false,
-                team: null,
-                role: '',
-                isActive: true,
-              }}
-              onRemove={() => handleAddFriend(f)}
-            />
-          ))}
+        <ScrollView style={{flex: 1}}>
+          {friends
+            .filter(
+              f =>
+                !currentRoom.players.some(
+                  p => p.userId === f.user.id && p.isActive,
+                ),
+            )
+            .map(f => {
+              const selected = selectedFriends.has(f.user.id);
+              return (
+                <TouchableOpacity
+                  key={f.user.id}
+                  style={[
+                    styles.friendRow,
+                    {borderBottomColor: colors.divider},
+                    selected && {backgroundColor: colors.primary + '15'},
+                  ]}
+                  activeOpacity={0.7}
+                  onPress={() => toggleFriendSelect(f.user.id)}>
+                  <Avatar name={f.user.name} size={36} />
+                  <Text
+                    style={[styles.friendName, {color: colors.text}]}
+                    numberOfLines={1}>
+                    {f.user.name}
+                  </Text>
+                  <FeatherIcon
+                    name={selected ? 'check-circle' : 'circle'}
+                    size={scale(22)}
+                    color={selected ? colors.primary : colors.border}
+                  />
+                </TouchableOpacity>
+              );
+            })}
         </ScrollView>
+        {selectedFriends.size > 0 && (
+          <Button
+            title={`Add ${selectedFriends.size} Player${selectedFriends.size > 1 ? 's' : ''}`}
+            onPress={handleAddSelectedFriends}
+            loading={actionLoading}
+            style={{marginTop: scale(12)}}
+          />
+        )}
       </BottomSheet>
 
       {/* Add Static Player Bottom Sheet */}
@@ -715,6 +762,19 @@ const styles = StyleSheet.create({
   resultScoreValue: {
     fontSize: scale(15),
     fontWeight: '700',
+  },
+  friendRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: scale(10),
+    paddingHorizontal: scale(4),
+    borderBottomWidth: 0.5,
+    gap: scale(12),
+  },
+  friendName: {
+    flex: 1,
+    fontSize: scale(15),
+    fontWeight: '500',
   },
   resultDescription: {
     fontSize: scale(14),

@@ -64,7 +64,7 @@ export default function BottomSheet({
 
   const panResponder = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (_, gestureState) =>
         gestureState.dy > 5,
       onPanResponderMove: (_, gestureState) => {
@@ -109,9 +109,10 @@ export default function BottomSheet({
               borderTopRightRadius: borderRadius.xl,
               transform: [{translateY}],
             },
-          ]}
-          {...panResponder.panHandlers}>
-          <View style={[styles.handle, {backgroundColor: colors.border}]} />
+          ]}>
+          <View style={styles.handleArea} {...panResponder.panHandlers}>
+            <View style={[styles.handle, {backgroundColor: colors.border}]} />
+          </View>
           <View style={styles.content}>{children}</View>
         </Animated.View>
       </KeyboardAvoidingView>
@@ -135,12 +136,14 @@ const styles = StyleSheet.create({
   sheet: {
     paddingTop: scale(8),
   },
+  handleArea: {
+    paddingVertical: scale(10),
+    alignItems: 'center',
+  },
   handle: {
     width: scale(40),
     height: scale(4),
     borderRadius: scale(2),
-    alignSelf: 'center',
-    marginBottom: scale(8),
   },
   content: {
     flex: 1,

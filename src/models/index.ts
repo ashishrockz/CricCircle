@@ -334,8 +334,8 @@ export interface CreateRoomPayload {
 }
 
 export interface AddFriendPlayerPayload {
-  userId: string;
-  name: string;
+  friendUserId: string;
+  playerName: string;
   team: 'A' | 'B';
 }
 
