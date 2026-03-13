@@ -30,6 +30,9 @@ export default {
     usernameRequired: 'Username is required',
     usernameTooShort: 'Username must be at least 3 characters',
     continue: 'Continue',
+    enterIdentifier: 'Please enter your phone number or email',
+    phoneDigitsError: 'Phone number must be 10 digits',
+    otpFailed: 'Failed to send OTP',
   },
   home: {
     welcome: 'Hey, {{name}}!',

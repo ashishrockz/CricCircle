@@ -30,6 +30,9 @@ export default {
     usernameRequired: 'उपयोगकर्ता नाम आवश्यक है',
     usernameTooShort: 'उपयोगकर्ता नाम कम से कम 3 अक्षर का होना चाहिए',
     continue: 'जारी रखें',
+    enterIdentifier: 'कृपया अपना फ़ोन नंबर या ईमेल दर्ज करें',
+    phoneDigitsError: 'फ़ोन नंबर 10 अंकों का होना चाहिए',
+    otpFailed: 'OTP भेजने में विफल',
   },
   home: {
     welcome: 'नमस्ते, {{name}}!',

@@ -22,6 +22,7 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import AppModal from '../../components/ui/AppModal';
 import ScreenHeader from '../../components/ScreenHeader';
+import TossSponsor from '../../components/TossSponsor';
 
 type Props = NativeStackScreenProps<RoomStackParams, 'Toss'>;
 
@@ -690,6 +691,8 @@ export default function TossScreen({navigation, route}: Props) {
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled">
+
+        <TossSponsor />
 
         {/* Coin */}
         {renderCoin()}

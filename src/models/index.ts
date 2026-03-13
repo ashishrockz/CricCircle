@@ -22,6 +22,7 @@ export interface User {
   friendsCount: number;
   role: 'user' | 'admin' | 'superadmin';
   status: 'active' | 'inactive' | 'banned';
+  termsAcceptedAt?: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }

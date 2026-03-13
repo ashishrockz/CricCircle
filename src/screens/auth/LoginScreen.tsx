@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {
   View,
   Text,
+  TextInput,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
@@ -13,40 +14,35 @@ import {useTheme} from '../../theme';
 import {useTranslation} from 'react-i18next';
 import {authService} from '../../services/auth.service';
 import {scale} from '../../utils/responsive';
-import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
-import AppModal from '../../components/ui/AppModal';
 
 type Props = NativeStackScreenProps<AuthStackParams, 'Login'>;
 
 export default function LoginScreen({navigation}: Props) {
-  const {colors} = useTheme();
+  const {colors, borderRadius} = useTheme();
   const {t} = useTranslation();
   const insets = useSafeAreaInsets();
-  const [identifier, setIdentifier] = useState('');
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [devOtp, setDevOtp] = useState('');
-
-  const isEmail = identifier.includes('@');
-  const method: 'phone' | 'email' = isEmail ? 'email' : 'phone';
 
   const handleSendOtp = async () => {
-    if (!identifier.trim()) {
-      setError('Please enter your phone number or email');
+    const trimmed = email.trim();
+    if (!trimmed) {
+      setError(t('auth.enterIdentifier'));
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setError('Please enter a valid email address');
       return;
     }
     setError('');
     setLoading(true);
     try {
-      const result = await authService.sendOtp(identifier.trim());
-      if (result.otp) {
-        setDevOtp(result.otp);
-      } else {
-        navigation.navigate('OtpVerify', {identifier: identifier.trim(), method});
-      }
+      await authService.sendOtp(trimmed);
+      navigation.navigate('OtpVerify', {identifier: trimmed, method: 'email'});
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to send OTP');
+      setError(err.response?.data?.message || t('auth.otpFailed'));
     } finally {
       setLoading(false);
     }
@@ -65,14 +61,31 @@ export default function LoginScreen({navigation}: Props) {
         </Text>
 
         <View style={styles.form}>
-          <Input
-            placeholder={t('auth.phonePlaceholder')}
-            value={identifier}
-            onChangeText={setIdentifier}
-            keyboardType={isEmail ? 'email-address' : 'phone-pad'}
-            autoCapitalize="none"
-            error={error}
-          />
+          <View>
+            <View
+              style={[
+                styles.inputWrapper,
+                {
+                  borderColor: error ? colors.error : colors.border,
+                  backgroundColor: colors.surface,
+                  borderRadius: borderRadius.md,
+                },
+              ]}>
+              <TextInput
+                style={[styles.input, {color: colors.text}]}
+                placeholder="Enter your email"
+                placeholderTextColor={colors.textSecondary}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+              />
+            </View>
+            {error ? (
+              <Text style={[styles.error, {color: colors.error}]}>{error}</Text>
+            ) : null}
+          </View>
           <Button
             title={t('auth.sendOtp')}
             onPress={handleSendOtp}
@@ -80,15 +93,6 @@ export default function LoginScreen({navigation}: Props) {
           />
         </View>
       </View>
-      <AppModal
-        visible={!!devOtp}
-        title="Dev OTP"
-        message={`Your OTP is: ${devOtp}`}
-        onClose={() => {
-          setDevOtp('');
-          navigation.navigate('OtpVerify', {identifier: identifier.trim(), method});
-        }}
-      />
     </KeyboardAvoidingView>
   );
 }
@@ -114,5 +118,21 @@ const styles = StyleSheet.create({
   },
   form: {
     gap: scale(8),
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    paddingHorizontal: scale(14),
+    marginBottom: scale(16),
+  },
+  input: {
+    flex: 1,
+    fontSize: scale(16),
+    paddingVertical: scale(12),
+  },
+  error: {
+    fontSize: scale(12),
+    marginTop: scale(4),
   },
 });

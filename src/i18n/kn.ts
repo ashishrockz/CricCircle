@@ -30,6 +30,9 @@ export default {
     usernameRequired: 'ಬಳಕೆದಾರ ಹೆಸರು ಅಗತ್ಯ',
     usernameTooShort: 'ಬಳಕೆದಾರ ಹೆಸರು ಕನಿಷ್ಠ 3 ಅಕ್ಷರ ಇರಬೇಕು',
     continue: 'ಮುಂದುವರಿಸಿ',
+    enterIdentifier: 'ದಯವಿಟ್ಟು ನಿಮ್ಮ ಫೋನ್ ಸಂಖ್ಯೆ ಅಥವಾ ಇಮೇಲ್ ನಮೂದಿಸಿ',
+    phoneDigitsError: 'ಫೋನ್ ಸಂಖ್ಯೆ 10 ಅಂಕಿಗಳಾಗಿರಬೇಕು',
+    otpFailed: 'OTP ಕಳುಹಿಸಲು ವಿಫಲವಾಗಿದೆ',
   },
   home: {
     welcome: 'ನಮಸ್ಕಾರ, {{name}}!',

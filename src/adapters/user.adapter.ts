@@ -13,6 +13,7 @@ export const userAdapter: Adapter<User> = {
       friendsCount: data.friendsCount || 0,
       role: data.role || 'user',
       status: data.status || 'active',
+      termsAcceptedAt: data.termsAcceptedAt ? new Date(data.termsAcceptedAt) : null,
       createdAt: new Date(data.createdAt),
       updatedAt: new Date(data.updatedAt),
     };

@@ -71,7 +71,7 @@ export default function OtpVerifyScreen({navigation, route}: Props) {
     try {
       const result = await authService.verifyOtp(identifier, code);
       // If user hasn't set up their profile yet, redirect to setup
-      if (!result.user.name || !result.user.username) {
+      if (!result.user.name || !result.user.username || !result.user.phone || !result.user.email || !result.user.termsAcceptedAt) {
         navigation.replace('ProfileSetup', {
           token: result.token,
           user: result.user,

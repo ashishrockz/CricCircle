@@ -22,6 +22,13 @@ const LANGUAGE_OPTIONS: DropdownOption[] = [
   {label: 'English', value: 'en', icon: '🇺🇸'},
   {label: 'हिन्दी', value: 'hi', icon: '🇮🇳'},
   {label: 'ಕನ್ನಡ', value: 'kn', icon: '🇮🇳'},
+  {label: 'தமிழ்', value: 'ta', icon: '🇮🇳'},
+  {label: 'తెలుగు', value: 'te', icon: '🇮🇳'},
+  {label: 'বাংলা', value: 'bn', icon: '🇮🇳'},
+  {label: 'العربية', value: 'ar', icon: '🇸🇦'},
+  {label: 'Español', value: 'es', icon: '🇪🇸'},
+  {label: 'Français', value: 'fr', icon: '🇫🇷'},
+  {label: 'Português', value: 'pt', icon: '🇧🇷'},
 ];
 
 const {width: SCREEN_WIDTH} = Dimensions.get('window');

@@ -11,6 +11,7 @@ import {useConfigStore} from '../../stores/config.store';
 import {authService} from '../../services/auth.service';
 import {scale} from '../../utils/responsive';
 import Button from '../../components/ui/Button';
+import SponsorBanner from '../../components/SponsorBanner';
 
 type Props = NativeStackScreenProps<AuthStackParams, 'Splash'>;
 
@@ -74,6 +75,7 @@ export default function SplashScreen({navigation}: Props) {
           style={styles.loader}
         />
       )}
+      <SponsorBanner placement="splash" />
     </View>
   );
 }

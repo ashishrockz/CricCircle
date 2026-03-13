@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {useAuthStore} from '../stores/auth.store';
 import {useConfigStore} from '../stores/config.store';
+import {setOnUnauthorized} from '../api/client';
 import AuthStack from './AuthStack';
 import MainTabs from './MainTabs';
 import ProfileSetupScreen from '../screens/auth/ProfileSetupScreen';
@@ -22,8 +23,16 @@ function isVersionBelow(current: string, required: string): boolean {
 export default function RootNavigator() {
   const isAuthenticated = useAuthStore(s => s.isAuthenticated);
   const user = useAuthStore(s => s.user);
+  const logout = useAuthStore(s => s.logout);
   const config = useConfigStore(s => s.config);
   const isLoaded = useConfigStore(s => s.isLoaded);
+
+  // Auto-logout on 401 (expired/invalid token)
+  useEffect(() => {
+    setOnUnauthorized(() => {
+      logout();
+    });
+  }, [logout]);
 
   // Gate: Maintenance mode
   if (isLoaded && config.maintenance.enabled) {
@@ -44,7 +53,7 @@ export default function RootNavigator() {
   }
 
   // If user is authenticated but hasn't completed profile setup, show setup screen
-  if (!user?.name || !user?.username) {
+  if (!user?.name || !user?.username || !user?.phone || !user?.email || !user?.termsAcceptedAt) {
     return <ProfileSetupScreen />;
   }
 

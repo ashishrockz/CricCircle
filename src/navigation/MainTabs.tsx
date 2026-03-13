@@ -1,13 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import {View, Text, StyleSheet, Platform} from 'react-native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import FeatherIcon from '@react-native-vector-icons/feather';
-import type { MainTabParams } from './types';
-import { useTheme } from '../theme';
-import { useAppStore } from '../stores/app.store';
-import { useConfigStore } from '../stores/config.store';
-import { scale } from '../utils/responsive';
+import type {MainTabParams} from './types';
+import {useTheme} from '../theme';
+import {useAppStore} from '../stores/app.store';
+import {useConfigStore} from '../stores/config.store';
+import {scale} from '../utils/responsive';
 import HomeStack from './HomeStack';
 import RoomStack from './RoomStack';
 import FriendsStack from './FriendsStack';
@@ -47,7 +47,12 @@ function TabIcon({
 }) {
   return (
     <View style={styles.tabIconContainer}>
-      <View style={[styles.iconWrapper, focused && styles.activeIconWrapper, focused && { backgroundColor: primaryColor + '20' }]}>
+      {focused && (
+        <View
+          style={[styles.activeIndicator, {backgroundColor: primaryColor}]}
+        />
+      )}
+      <View style={styles.iconWrapper}>
         <FeatherIcon name={name} color={color} size={scale(22)} />
         {badge != null && badge > 0 && (
           <View style={styles.badge}>
@@ -60,7 +65,7 @@ function TabIcon({
       <Text
         style={[
           styles.tabLabel,
-          { color, fontWeight: focused ? '600' : '400' },
+          {color, fontWeight: focused ? '600' : '400'},
         ]}
         numberOfLines={1}>
         {label}
@@ -77,35 +82,31 @@ function shouldHideTabBar(route: any, tabName: string): boolean {
 }
 
 export default function MainTabs() {
-  const { colors } = useTheme();
+  const {colors} = useTheme();
   const unreadNotifications = useAppStore(s => s.unreadNotifications);
   const features = useConfigStore(s => s.config.features);
 
   const baseTabBarStyle = {
     backgroundColor: colors.tabBar,
+    borderTopColor: colors.border,
     borderTopWidth: 0,
     height: TAB_HEIGHT,
-    position: 'absolute' as const,
-    bottom: Platform.OS === 'ios' ? scale(24) : scale(16),
-    left: scale(16),
-    right: scale(16),
-    borderRadius: scale(24),
-    paddingBottom: 0,
-    paddingTop: scale(10),
+    paddingBottom: Platform.OS === 'ios' ? scale(4) : scale(8),
+    paddingTop: scale(6),
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.1,
-        shadowRadius: 16,
+        shadowOffset: {width: 0, height: -4},
+        shadowOpacity: 0.06,
+        shadowRadius: 12,
       },
       android: {
-        elevation: 10,
+        elevation: 8,
       },
     }),
   };
 
-  const hiddenStyle = { display: 'none' as const };
+  const hiddenStyle = {display: 'none' as const};
 
   return (
     <Tab.Navigator
@@ -120,8 +121,8 @@ export default function MainTabs() {
       <Tab.Screen
         name="HomeTab"
         component={HomeStack}
-        options={({ route }) => ({
-          tabBarIcon: ({ color, focused }) => (
+        options={({route}) => ({
+          tabBarIcon: ({color, focused}) => (
             <TabIcon
               name="home"
               color={color}
@@ -139,8 +140,8 @@ export default function MainTabs() {
         <Tab.Screen
           name="RoomsTab"
           component={RoomStack}
-          options={({ route }) => ({
-            tabBarIcon: ({ color, focused }) => (
+          options={({route}) => ({
+            tabBarIcon: ({color, focused}) => (
               <TabIcon
                 name="grid"
                 color={color}
@@ -162,15 +163,15 @@ export default function MainTabs() {
           options={{
             tabBarShowLabel: false,
             tabBarIcon: () => (
-              <View style={[styles.fab, { backgroundColor: colors.primary }]}>
-                <FeatherIcon name="plus" color="#FFF" size={scale(26)} />
+              <View style={[styles.fab, {backgroundColor: colors.primary}]}>
+                <FeatherIcon name="plus" color="#FFF" size={scale(24)} />
               </View>
             ),
           }}
-          listeners={({ navigation }) => ({
+          listeners={({navigation}) => ({
             tabPress: e => {
               e.preventDefault();
-              navigation.navigate('HomeTab', { screen: 'CreateRoom' });
+              navigation.navigate('HomeTab', {screen: 'CreateRoom'});
             },
           })}
         />
@@ -179,8 +180,8 @@ export default function MainTabs() {
         <Tab.Screen
           name="FriendsTab"
           component={FriendsStack}
-          options={({ route }) => ({
-            tabBarIcon: ({ color, focused }) => (
+          options={({route}) => ({
+            tabBarIcon: ({color, focused}) => (
               <TabIcon
                 name="users"
                 color={color}
@@ -199,8 +200,8 @@ export default function MainTabs() {
       <Tab.Screen
         name="ProfileTab"
         component={ProfileStack}
-        options={({ route }) => ({
-          tabBarIcon: ({ color, focused }) => (
+        options={({route}) => ({
+          tabBarIcon: ({color, focused}) => (
             <TabIcon
               name="user"
               color={color}
@@ -226,18 +227,14 @@ const styles = StyleSheet.create({
     paddingTop: scale(2),
   },
   activeIndicator: {
-    // Removed
+    position: 'absolute',
+    top: -scale(6),
+    width: scale(24),
+    height: scale(3),
+    borderRadius: scale(2),
   },
   iconWrapper: {
     position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: scale(44),
-    height: scale(32),
-    borderRadius: scale(16),
-  },
-  activeIconWrapper: {
-    // Background color applied dynamically inline
   },
   tabLabel: {
     fontSize: scale(10),
@@ -245,16 +242,16 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
   fab: {
-    width: scale(52),
-    height: scale(52),
-    borderRadius: scale(26),
+    width: scale(48),
+    height: scale(48),
+    borderRadius: scale(16),
     alignItems: 'center',
     justifyContent: 'center',
-    top: -scale(26), // Float above the tab bar
+    marginBottom: scale(16),
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
+        shadowOffset: {width: 0, height: 4},
         shadowOpacity: 0.2,
         shadowRadius: 8,
       },

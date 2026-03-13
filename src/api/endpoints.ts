@@ -9,6 +9,7 @@ export const ENDPOINTS = {
     LIST: '/api/user',
     GET: (id: string) => `/api/user/${id}`,
     STATS: (id: string) => `/api/user/${id}/stats`,
+    CHECK_AVAILABILITY: '/api/user/check-availability',
   },
   FRIENDS: {
     LIST: '/api/friends',

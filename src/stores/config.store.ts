@@ -65,6 +65,30 @@ export interface BrandingConfig {
   logoUrl: string;
 }
 
+export interface AdPlacement {
+  enabled: boolean;
+  mediaType: 'image' | 'video';
+  mediaUrl: string;
+  linkUrl: string;
+  sponsorName: string;
+}
+
+export interface TossAdPlacement {
+  enabled: boolean;
+  logoUrl: string;
+  sponsorName: string;
+  tagline: string;
+}
+
+export interface AdvertisementsConfig {
+  enabled: boolean;
+  placements: {
+    splash: AdPlacement;
+    homeBanner: AdPlacement;
+    tossScreen: TossAdPlacement;
+  };
+}
+
 export interface RemoteConfig {
   version: number;
   maintenance: MaintenanceConfig;
@@ -72,6 +96,7 @@ export interface RemoteConfig {
   settings: SettingsConfig;
   content: ContentConfig;
   branding: BrandingConfig;
+  advertisements: AdvertisementsConfig;
 }
 
 // ── Defaults (match current hardcoded values) ───────────────────────────────
@@ -123,6 +148,14 @@ export const DEFAULT_CONFIG: RemoteConfig = {
     primaryColor: '',
     accentColor: '',
     logoUrl: '',
+  },
+  advertisements: {
+    enabled: false,
+    placements: {
+      splash: {enabled: false, mediaType: 'image', mediaUrl: '', linkUrl: '', sponsorName: ''},
+      homeBanner: {enabled: false, mediaType: 'image', mediaUrl: '', linkUrl: '', sponsorName: ''},
+      tossScreen: {enabled: false, logoUrl: '', sponsorName: '', tagline: ''},
+    },
   },
 };
 

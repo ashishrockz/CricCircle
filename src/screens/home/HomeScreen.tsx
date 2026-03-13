@@ -24,6 +24,7 @@ import Button from '../../components/ui/Button';
 import RoomCard from '../../components/RoomCard';
 import EmptyState from '../../components/ui/EmptyState';
 import AnnouncementBanner from '../../components/AnnouncementBanner';
+import SponsorBanner from '../../components/SponsorBanner';
 import type {Room, Match} from '../../models';
 
 type Nav = NativeStackNavigationProp<HomeStackParams>;
@@ -132,6 +133,7 @@ export default function HomeScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }>
         <AnnouncementBanner />
+        <SponsorBanner placement="homeBanner" />
         <Card style={styles.welcomeCard} elevation={2}>
           <Text style={[styles.welcome, {color: colors.text}]}>
             {t('home.welcome', {name: user?.name || 'Player'})}
